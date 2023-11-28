@@ -1,8 +1,10 @@
 import os
 import s3fs
+import logging
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
+logging.basicConfig(level=logging.DEBUG)
 # Install the Slack app and get xoxb- token in advance
 app = App(token=os.environ["SLACK_BOT_TOKEN"])
 
@@ -16,11 +18,11 @@ def hello_command(ack, body):
 
 
 @app.command("/ls")
-def ls_command(ack, respond, directory):
+def ls_command(ack, respond, command):
     ack()
-
-    path = directory['text'] if directory['text'] else ""
-    res = ",".join(s3fs.S3FileSystem().ls(f"bd-mpdw-dev-slack/{directory['text']}"))
+    logger.info(body)
+    path = command['text'] if command['text'] else ""
+    res = ",".join(s3fs.S3FileSystem().ls(f"bd-mpdw-dev-slack/{command['text']}"))
 
     respond(res)
 
