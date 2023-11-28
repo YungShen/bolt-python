@@ -1,4 +1,5 @@
 import os
+import s3fs
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
@@ -14,10 +15,21 @@ def hello_command(ack, body):
     ack(f"Hi <@{user_id}>!")
 
 
+@app.command("/ls")
+def ls_command(ack, respond, directory):
+    ack()
+
+    path = directory['text'] if directory['text'] else ""
+    res = ",".join(s3fs.S3FileSystem().ls(f"bd-mpdw-dev-slack/{directory['text']}"))
+
+    respond(res)
+
+
 @app.event("app_mention")
 def event_test(event, say):
     say(f"Hi there, <@{event['user']}>!")
-    
+
+
 @app.event("app_home_opened")
 def update_home_tab(client, event, logger):
     try:
